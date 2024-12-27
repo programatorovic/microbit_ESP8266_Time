@@ -6,9 +6,8 @@ let minute = 0
 let second = 0
 let utc = 1
 
-// Pripojenie k WiFi
-let connected = ESP8266TimeExtension.connect8266(SerialPin.P0, SerialPin.P1, "SSID", "KEY")
-if (connected == 1) {
+// Predpokladáme, že pripojenie k WiFi a testovanie pripojenia je už vyriešené v pôvodnom rozšírení
+if (ESP8266_IoT.isconnected()) {
     basic.showString("WiFi Connected")
     // Získanie aktuálneho času
     ESP8266TimeExtension.getTime(year, month, day, hour, minute, second, utc)

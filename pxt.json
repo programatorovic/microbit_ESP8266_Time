@@ -1,6 +1,6 @@
 {
     "name": "ESP8266 Time Extension",
-    "description": "Rozšírenie pre pripojenie ESP8266 a získanie aktuálneho času z internetu.",
+    "description": "Rozšírenie pre získanie aktuálneho času z internetu pomocou ESP8266.",
     "dependencies": {
         "core": "*",
         "radio": "*",
