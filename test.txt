@@ -1,0 +1,18 @@
+let year = 0
+let month = 0
+let day = 0
+let hour = 0
+let minute = 0
+let second = 0
+let utc = 1
+
+// Pripojenie k WiFi
+let connected = ESP8266TimeExtension.connect8266(SerialPin.P0, SerialPin.P1, "SSID", "KEY")
+if (connected == 1) {
+    basic.showString("WiFi Connected")
+    // Získanie aktuálneho času
+    ESP8266TimeExtension.getTime(year, month, day, hour, minute, second, utc)
+    basic.showString(`${year}-${month}-${day} ${hour}:${minute}:${second}`)
+} else {
+    basic.showString("WiFi Not Connected")
+}

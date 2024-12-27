@@ -1,0 +1,20 @@
+{
+    "name": "ESP8266 Time Extension",
+    "description": "Rozšírenie pre pripojenie ESP8266 a získanie aktuálneho času z internetu.",
+    "dependencies": {
+        "core": "*",
+        "radio": "*",
+        "ESP8266_IoT": "github:elecfreaks/pxt-esp8266iot"
+    },
+    "files": [
+        "main.ts"
+    ],
+    "targetVersions": {
+        "branch": "v2.0.0",
+        "tag": "v2.0.0",
+        "commits": "*"
+    },
+    "supportedTargets": [
+        "microbit"
+    ]
+}
