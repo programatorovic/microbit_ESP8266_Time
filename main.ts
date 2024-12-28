@@ -20,10 +20,7 @@ namespace ESP8266TimeExtension {
 
     // Funkcia na prijatie odpovede z ESP8266
     function receiveResponse(): string {
-        let response = "";
-        while (serial.available()) {
-            response += serial.readString();
-        }
+        let response = serial.readString();
         return response;
     }
 
