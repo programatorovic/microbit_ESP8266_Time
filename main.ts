@@ -12,14 +12,28 @@ namespace ESP8266TimeExtension {
         second: number;
     }
 
+    // Funkcia na odoslanie príkazu do ESP8266
+    function sendCommand(command: string): void {
+        serial.writeString(command + "\r\n");
+        basic.pause(100);
+    }
+
+    // Funkcia na prijatie odpovede z ESP8266
+    function receiveResponse(): string {
+        let response = "";
+        while (serial.available()) {
+            response += serial.readString();
+        }
+        return response;
+    }
+
     // Funkcia na získanie času z NTP servera
     function getntptime(utc: number): Time {
         // Príkazy na komunikáciu s ESP8266 a získanie času z NTP servera
-        // Toto je len príklad, skutočná implementácia bude závisieť od použitého NTP servera a formátu odpovede
-        ESP8266_IoT.sendCommand("AT+CIPSTART=\"TCP\",\"pool.ntp.org\",123");
-        ESP8266_IoT.sendCommand("AT+CIPSEND=48");
-        ESP8266_IoT.sendCommand("BEEF");
-        let response = ESP8266_IoT.receiveResponse();
+        sendCommand("AT+CIPSTART=\"TCP\",\"pool.ntp.org\",123");
+        sendCommand("AT+CIPSEND=48");
+        sendCommand("BEEF");
+        let response = receiveResponse();
 
         // Parsovanie odpovede a výpočet času
         let time: Time = {
