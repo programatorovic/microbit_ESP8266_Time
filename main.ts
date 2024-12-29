@@ -37,16 +37,16 @@ namespace ESP8266TimeExtension {
         let timestamp = parseInt(response.substr(43, 8), 16);  // Extrahovanie timestampu zo správnej pozície v odpovedi
 
         // Konverzia Unix timestampu na dátum a čas
-        let date = new Date(timestamp * 1000);  // JavaScript Date používa milisekundy, takže násobíme 1000
+        let dta = new Date(timestamp * 1000);  // JavaScript Date používa milisekundy, takže násobíme 1000
 
         // Vytvorenie objektu Time
         let time: Time = {
-            year: date.getUTCFullYear(),
-            month: date.getUTCMonth() + 1,  // Mesiac je 0-indexovaný (0 = január)
-            day: date.getUTCDate(),
-            hour: date.getUTCHours(),
-            minute: date.getUTCMinutes(),
-            second: date.getUTCSeconds()
+            year: dta.getUTCFullYear(),
+            month: dta.getUTCMonth() + 1,  // Mesiac je 0-indexovaný (0 = január)
+            day: dta.getUTCDate(),
+            hour: dta.getUTCHours(),
+            minute: dta.getUTCMinutes(),
+            second: dta.getUTCSeconds()
         };
 
         // Prispôsobenie času podľa UTC (ak je treba)
