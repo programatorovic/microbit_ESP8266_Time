@@ -20,7 +20,10 @@ namespace ESP8266TimeExtension {
 
     // Funkcia na prijatie odpovede z ESP8266
     function receiveResponse(): string {
-        let response = serial.readString();
+        let response = "";
+        while (serial.readable()) {
+            response += serial.readString();
+        }
         return response;
     }
 
@@ -59,5 +62,16 @@ namespace ESP8266TimeExtension {
         hour = time.hour;
         minute = time.minute;
         second = time.second;
+    }
+
+    // NTP Read Block
+    //% block="NTP Read"
+    export function ntpRead(): string {
+        // Príkazy na komunikáciu s ESP8266 a získanie odpovede z NTP servera
+        sendCommand("AT+CIPSTART=\"TCP\",\"pool.ntp.org\",123");
+        sendCommand("AT+CIPSEND=48");
+        sendCommand("BEEF");
+        let response = receiveResponse();
+        return response;
     }
 }
