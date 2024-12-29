@@ -26,18 +26,25 @@ namespace ESP8266TimeExtension {
 
     // Funkcia na získanie času z NTP servera
     function getntptime(utc: number): Time {
-        // Príkaz na komunikáciu s ESP8266 a získanie času z NTP servera
-        sendCommand("AT+CIPSTART=\"TCP\",\"pool.ntp.org\",123");  // Otvorenie TCP spojenia
-        sendCommand("AT+CIPSEND=48");  // Oznámenie o veľkosti dát, ktoré sa odosielajú
-        sendCommand("1B 00 04 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00");  // Odoslanie požiadavky v NTP formáte
+        // Otvorenie TCP spojenia na NTP server
+        sendCommand("AT+CIPSTART=\"TCP\",\"pool.ntp.org\",123");  // NTP port je 123
+        basic.pause(100); // Dáme trochu času na inicializáciu spojenia
+        sendCommand("AT+CIPSEND=48");  // Požiadame ESP8266 o odoslanie 48 bajtov
+        basic.pause(100); // Pauza pred odoslaním dát
+        sendCommand("1B 00 04 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00"); // NTP požiadavka
 
         let response = receiveResponse();  // Získanie odpovede z NTP servera
 
-        // Predpokladám, že odpoveď bude v binárnom formáte, z ktorého získame Unix timestamp (v sekundách)
-        let timestamp = parseInt(response.substr(43, 8), 16);  // Extrahovanie timestampu zo správnej pozície v odpovedi
+        // Zisťujeme timestamp zo správnej pozície v odpovedi
+        // Odpoveď je binárna, teda bude potrebné správne dekódovať dáta.
+        // Očakávame, že timestamp je na pozícii 43-47 v odpovedi
+        let timestampHex = response.substr(43, 8);
 
-        // Konverzia Unix timestampu na dátum a čas
-        let dta = new Date(timestamp * 1000);  // JavaScript Date používa milisekundy, takže násobíme 1000
+        // Získame timestamp v sekúndach (binárne dáta môžeme previesť na celé číslo)
+        let timestamp = parseInt(timestampHex, 16);
+
+        // Konverzia Unix timestampu na dátum a čas (v milisekundách)
+        let dta = new Date(timestamp * 1000);  // Prevod na JavaScript Date (milisekundy)
 
         // Vytvorenie objektu Time
         let time: Time = {
@@ -77,9 +84,12 @@ namespace ESP8266TimeExtension {
     //% block="NTP Read"
     export function ntpRead(): string {
         // Príkazy na komunikáciu s ESP8266 a získanie odpovede z NTP servera
-        sendCommand("AT+CIPSTART=\"TCP\",\"pool.ntp.org\",123");  // Otvorenie TCP spojenia
-        sendCommand("AT+CIPSEND=48");  // Oznámenie o veľkosti dát, ktoré sa odosielajú
-        sendCommand("1B 00 04 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00");  // Odoslanie požiadavky v NTP formáte
+        // Otvorenie TCP spojenia na NTP server
+        sendCommand("AT+CIPSTART=\"TCP\",\"pool.ntp.org\",123");  // NTP port je 123
+        basic.pause(100); // Dáme trochu času na inicializáciu spojenia
+        sendCommand("AT+CIPSEND=48");  // Požiadame ESP8266 o odoslanie 48 bajtov
+        basic.pause(100); // Pauza pred odoslaním dát
+        sendCommand("1B 00 04 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00"); // NTP požiadavka
         let response = receiveResponse();
         return response;
     }
