@@ -77,9 +77,9 @@ namespace ESP8266TimeExtension {
     //% block="NTP Read"
     export function ntpRead(): string {
         // Príkazy na komunikáciu s ESP8266 a získanie odpovede z NTP servera
-        sendCommand("AT+CIPSTART=\"TCP\",\"pool.ntp.org\",123");
-        sendCommand("AT+CIPSEND=48");
-        sendCommand("BEEF");
+        sendCommand("AT+CIPSTART=\"TCP\",\"pool.ntp.org\",123");  // Otvorenie TCP spojenia
+        sendCommand("AT+CIPSEND=48");  // Oznámenie o veľkosti dát, ktoré sa odosielajú
+        sendCommand("1B 00 04 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00");  // Odoslanie požiadavky v NTP formáte
         let response = receiveResponse();
         return response;
     }
