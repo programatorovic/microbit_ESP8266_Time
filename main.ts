@@ -26,24 +26,36 @@ namespace ESP8266TimeExtension {
 
     // Funkcia na získanie času z NTP servera
     function getntptime(utc: number): Time {
-        // Príkazy na komunikáciu s ESP8266 a získanie času z NTP servera
-        sendCommand("AT+CIPSTART=\"TCP\",\"pool.ntp.org\",123");
-        sendCommand("AT+CIPSEND=48");
-        sendCommand("BEEF");
-        let response = receiveResponse();
+        // Príkaz na komunikáciu s ESP8266 a získanie času z NTP servera
+        sendCommand("AT+CIPSTART=\"TCP\",\"pool.ntp.org\",123");  // Otvorenie TCP spojenia
+        sendCommand("AT+CIPSEND=48");  // Oznámenie o veľkosti dát, ktoré sa odosielajú
+        sendCommand("1B 00 04 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00");  // Odoslanie požiadavky v NTP formáte
 
-        // Parsovanie odpovede a výpočet času
-        // Toto je len príklad, skutočná implementácia bude závisieť od použitého NTP servera a formátu odpovede
+        let response = receiveResponse();  // Získanie odpovede z NTP servera
+
+        // Predpokladám, že odpoveď bude v binárnom formáte, z ktorého získame Unix timestamp (v sekundách)
+        let timestamp = parseInt(response.substr(43, 8), 16);  // Extrahovanie timestampu zo správnej pozície v odpovedi
+
+        // Konverzia Unix timestampu na dátum a čas
+        let date = new Date(timestamp * 1000);  // JavaScript Date používa milisekundy, takže násobíme 1000
+
+        // Vytvorenie objektu Time
         let time: Time = {
-            year: parseInt(response.substr(0, 4)),
-            month: parseInt(response.substr(5, 2)),
-            day: parseInt(response.substr(8, 2)),
-            hour: parseInt(response.substr(11, 2)),
-            minute: parseInt(response.substr(14, 2)),
-            second: parseInt(response.substr(17, 2))
+            year: date.getUTCFullYear(),
+            month: date.getUTCMonth() + 1,  // Mesiac je 0-indexovaný (0 = január)
+            day: date.getUTCDate(),
+            hour: date.getUTCHours(),
+            minute: date.getUTCMinutes(),
+            second: date.getUTCSeconds()
         };
-        // Prispôsobenie času podľa UTC
+
+        // Prispôsobenie času podľa UTC (ak je treba)
         time.hour += utc;
+        if (time.hour >= 24) {
+            time.hour -= 24;
+            time.day += 1;
+        }
+
         return time;
     }
 
@@ -71,5 +83,5 @@ namespace ESP8266TimeExtension {
         let response = receiveResponse();
         return response;
     }
-    
+
 }
