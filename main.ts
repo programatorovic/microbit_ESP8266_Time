@@ -24,6 +24,51 @@ namespace ESP8266TimeExtension {
         return response;
     }
 
+    // Funkcia na konverziu Unix timestampu na dátum (rok, mesiac, deň, hodina, minúta, sekunda)
+    function unixToDate(timestamp: number): Time {
+        let t = timestamp;
+
+        // Počet sekúnd v dni
+        const SECONDS_IN_DAY = 86400;
+
+        // Počet dní v mesiaci
+        const DAYS_IN_MONTH = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]; // pre neprestupný rok
+
+        // Zistíme, koľko rokov uplynulo od Unix epochy (1.1.1970)
+        let years = Math.floor(t / (SECONDS_IN_DAY * 365.25)); // Priemerný počet sekúnd za rok, vrátane prestupných rokov
+        let year = 1970 + years;
+
+        // Počet dní, ktoré už uplynuli v aktuálnom roku
+        let daysInYear = Math.floor(t / SECONDS_IN_DAY) - (years * 365);
+        let month = 0;
+        let day = 0;
+
+        // Zistíme, ktorý mesiac a deň v mesiaci je
+        while (daysInYear >= DAYS_IN_MONTH[month]) {
+            daysInYear -= DAYS_IN_MONTH[month];
+            month++;
+        }
+
+        day = daysInYear + 1;  // Mesiace začínajú od 1, nie 0
+
+        // Získame hodinu, minútu a sekundu
+        let hours = Math.floor((t % SECONDS_IN_DAY) / 3600);
+        let minutes = Math.floor((t % SECONDS_IN_DAY) % 3600 / 60);
+        let seconds = (t % SECONDS_IN_DAY) % 60;
+
+        // Vytvoríme objekt Time
+        let time: Time = {
+            year: year,
+            month: month + 1,  // Mesiac je 0-indexovaný, ale v kalendári je 1-indexovaný
+            day: day,
+            hour: hours,
+            minute: minutes,
+            second: seconds
+        };
+
+        return time;
+    }
+
     // Funkcia na získanie času z NTP servera
     function getntptime(utc: number): Time {
         // Otvorenie TCP spojenia na NTP server
@@ -43,18 +88,8 @@ namespace ESP8266TimeExtension {
         // Získame timestamp v sekúndach (binárne dáta môžeme previesť na celé číslo)
         let timestamp = parseInt(timestampHex, 16);
 
-        // Konverzia Unix timestampu na dátum a čas (v milisekundách)
-        let dta = new Date(timestamp * 1000);  // Prevod na JavaScript Date (milisekundy)
-
-        // Vytvorenie objektu Time
-        let time: Time = {
-            year: dta.getUTCFullYear(),
-            month: dta.getUTCMonth() + 1,  // Mesiac je 0-indexovaný (0 = január)
-            day: dta.getUTCDate(),
-            hour: dta.getUTCHours(),
-            minute: dta.getUTCMinutes(),
-            second: dta.getUTCSeconds()
-        };
+        // Konverzia Unix timestampu na dátum a čas
+        let time = unixToDate(timestamp);
 
         // Prispôsobenie času podľa UTC (ak je treba)
         time.hour += utc;
