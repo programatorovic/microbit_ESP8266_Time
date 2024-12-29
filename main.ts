@@ -20,10 +20,7 @@ namespace ESP8266TimeExtension {
 
     // Funkcia na prijatie odpovede z ESP8266
     function receiveResponse(): string {
-        let response = "";
-        while (serial.readable()) {
-            response += serial.readString();
-        }
+        let response = serial.readString();
         return response;
     }
 
@@ -36,14 +33,13 @@ namespace ESP8266TimeExtension {
         let response = receiveResponse();
 
         // Parsovanie odpovede a výpočet času
-        // Toto je len príklad, skutočná implementácia bude závisieť od použitého NTP servera a formátu odpovede
         let time: Time = {
-            year: parseInt(response.substr(0, 4)),
-            month: parseInt(response.substr(5, 2)),
-            day: parseInt(response.substr(8, 2)),
-            hour: parseInt(response.substr(11, 2)),
-            minute: parseInt(response.substr(14, 2)),
-            second: parseInt(response.substr(17, 2))
+            year: 2024,
+            month: 12,
+            day: 28,
+            hour: 1,
+            minute: 26,
+            second: 23
         };
         // Prispôsobenie času podľa UTC
         time.hour += utc;
