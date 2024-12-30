@@ -102,6 +102,18 @@ namespace ESP8266TimeExtension {
         return time;
     }
 
+    // Funkcia na prevod odpovede do hexadecimálneho formátu
+    function Dump(response: string): string {
+        let hexString = "";
+        // Prechádzame každý znak v reťazci odpovede a prevádzame ho na hexadecimálnu hodnotu
+        for (let i = 0; i < response.length; i++) {
+            let hex = response.charCodeAt(i).toString(16).toUpperCase();  // Prevedieme znak na hex
+            // Pridáme formátovaný hexadecimálny kód (doplníme nulu na začiatok ak je potrebné)
+            hexString += (hex.length == 1 ? "0" : "") + hex + " ";
+        }
+        return hexString.trim();  // Vrátíme hexadecimálny reťazec bez poslednej medzery
+    }
+
     // GetTime Block
     //% block="GetTime Rok %year Mesiac %month Den %day Hodina %hour Minuta %minute Sekunda %second UTC %utc"
     export function getTime(year: number, month: number, day: number, hour: number, minute: number, second: number, utc: number): void {
@@ -130,12 +142,16 @@ namespace ESP8266TimeExtension {
         return response;
     }
 
-    // Testovacia funkcia na komunikáciu s ESP8266
+    // Testovacia funkcia na komunikáciu s ESP8266 a prevod odpovede do hexadecimálneho formátu
     //% block="TestNTP s príkazom %command"
     //% command.defl="AT"
     export function TestNTP(command: string): string {
         sendCommand(command);  // Posielame príkaz na ESP8266
         let response = receiveResponse();  // Čítame odpoveď z ESP8266
-        return response;  // Vrátime odpoveď na príkaz
+
+        // Prevod odpovede do hexadecimálneho formátu
+        let hexResponse = Dump(response);
+
+        return hexResponse;  // Vrátime odpoveď v hexadecimálnom formáte
     }
 }
