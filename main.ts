@@ -15,12 +15,13 @@ namespace ESP8266TimeExtension {
     // Funkcia na odoslanie príkazu do ESP8266
     function sendCommand(command: string): void {
         serial.writeString(command + "\r\n");
-        basic.pause(100);
+        basic.pause(500);
     }
 
     // Funkcia na prijatie odpovede z ESP8266
     function receiveResponse(): string {
         let response = serial.readString();
+        //console.log(response);  // Zobrazí odpoveď na konzole pre debugovanie
         return response;
     }
 
@@ -129,4 +130,12 @@ namespace ESP8266TimeExtension {
         return response;
     }
 
+    // Testovacia funkcia na komunikáciu s ESP8266
+    //% block="TestNTP s príkazom %command"
+    //% command.defl="AT"
+    export function TestNTP(command: string): string {
+        sendCommand(command);  // Posielame príkaz na ESP8266
+        let response = receiveResponse();  // Čítame odpoveď z ESP8266
+        return response;  // Vrátime odpoveď na príkaz
+    }
 }
