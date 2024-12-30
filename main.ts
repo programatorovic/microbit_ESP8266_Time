@@ -105,6 +105,11 @@ namespace ESP8266TimeExtension {
     // Funkcia na prevod odpovede do hexadecimálneho formátu
     function Dump(response: string): string {
         let hexString = "";
+        // Overíme, či je odpoveď reťazec, ak nie, prevodíme na reťazec
+        if (typeof response !== "string") {
+            response = response.toString();  // Preveďme odpoveď na reťazec
+        }
+
         // Prechádzame každý znak v reťazci odpovede a prevádzame ho na hexadecimálnu hodnotu
         for (let i = 0; i < response.length; i++) {
             let hex = response.charCodeAt(i).toString(16).toUpperCase();  // Prevedieme znak na hex
